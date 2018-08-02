@@ -68,17 +68,17 @@ fillCuisinesHTML = (cuisines = self.cuisines) => {
 }
 
 /**
- * Initialize Google map, called from HTML.
+ * Initialize Leaflet map, called from HTML.
  */
 window.initMap = () => {
   let loc = {
     lat: 40.722216,
     lng: -73.987501
   };
-  self.map = new google.maps.Map(document.getElementById('map'), {
-    zoom: 12,
+  self.map = L.map(document.getElementById('map'), {
     center: loc,
-    scrollwheel: false
+    zoom: 12,
+    scrollWheelZoom: false
   });
   updateRestaurants();
 }
@@ -116,7 +116,7 @@ resetRestaurants = (restaurants) => {
   ul.innerHTML = '';
 
   // Remove all map markers
-  self.markers.forEach(m => m.setMap(null));
+  self.markers.forEach(m => map.removeLayer(m));
   self.markers = [];
   self.restaurants = restaurants;
 }
@@ -171,7 +171,7 @@ addMarkersToMap = (restaurants = self.restaurants) => {
   restaurants.forEach(restaurant => {
     // Add marker to the map
     const marker = DBHelper.mapMarkerForRestaurant(restaurant, self.map);
-    google.maps.event.addListener(marker, 'click', () => {
+    map.on(marker, 'click', () => {
       window.location.href = marker.url
     });
     self.markers.push(marker);

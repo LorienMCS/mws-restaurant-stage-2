@@ -8,7 +8,6 @@ let urlsToCache = [
   '/js/main.js',
   '/js/restaurant_info.js',
   '/img/',
-  '/data/restaurants.json'
 ];
 
 self.addEventListener('install', event => {

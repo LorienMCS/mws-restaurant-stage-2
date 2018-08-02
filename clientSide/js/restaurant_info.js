@@ -2,17 +2,17 @@ let restaurant;
 var map;
 
 /**
- * Initialize Google map, called from HTML.
+ * Initialize Leaflet map, called from HTML.
  */
 window.initMap = () => {
   fetchRestaurantFromURL((error, restaurant) => {
     if (error) { // Got an error!
       console.error(error);
     } else {
-      self.map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 16,
+      self.map = L.map(document.getElementById('map'), {
         center: restaurant.latlng,
-        scrollwheel: false
+        zoom: 16,
+        scrollWheelZoom: false
       });
       fillBreadcrumb();
       DBHelper.mapMarkerForRestaurant(self.restaurant, self.map);
