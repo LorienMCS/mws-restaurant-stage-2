@@ -141,7 +141,10 @@ class DBHelper {
    * Restaurant image URL.
    */
   static imageUrlForRestaurant(restaurant) {
-    return (`/img/${restaurant.photograph}`);
+    // Returning ID instead of photograph
+    // because server json data is missing one photograph,
+    // and id is the same as photograph name
+    return (`/img/${restaurant.id}.jpg`);
   }
 
   /**
