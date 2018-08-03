@@ -19,7 +19,7 @@ class DBHelper {
     fetch(DBHelper.DATABASE_URL)
     .then(response => response.json())
     .then(restaurants => callback(null, restaurants))
-    .catch(error => callback(`Request failed. Returned status of ${error.statusText}`, null))
+    .catch(error => callback(`Request failed. Returned status of ${error.statusText}`, null));
   }
 
   /**
@@ -148,10 +148,13 @@ class DBHelper {
    * Map marker for a restaurant.
    */
   static mapMarkerForRestaurant(restaurant, map) {
-    const marker = L.marker(restaurant.latlng, {
-      title: restaurant.name,
-      pane: map}
-    );
+    const loc = restaurant.latlng;
+    const marker = new L.marker([loc.lat, loc.lng],
+      {title: restaurant.name,
+      alt: restaurant.name,
+      url: DBHelper.urlForRestaurant(restaurant)
+      })
+    marker.addTo(newMap);
     return marker;
   }
 

@@ -1,21 +1,29 @@
 let restaurant;
-var map;
+var newMap;
 
 /**
- * Initialize Leaflet map, called from HTML.
+ * Initialize Leaflet map as soon as page loads.
  */
-window.initMap = () => {
+document.addEventListener('DOMContentLoaded', (event) => {
+  initMap();
+});
+
+/**
+ * Initialize Leaflet map
+ */
+initMap = () => {
   fetchRestaurantFromURL((error, restaurant) => {
     if (error) { // Got an error!
       console.error(error);
     } else {
-      self.map = L.map(document.getElementById('map'), {
-        center: restaurant.latlng,
+      const loc = restaurant.latlng;
+      self.newMap = L.map('map', {
+        center: [loc.lat, loc.lng],
         zoom: 16,
         scrollWheelZoom: false
       });
       fillBreadcrumb();
-      DBHelper.mapMarkerForRestaurant(self.restaurant, self.map);
+      DBHelper.mapMarkerForRestaurant(self.restaurant, self.newMap);
     }
   });
 }

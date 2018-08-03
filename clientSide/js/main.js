@@ -1,13 +1,14 @@
 let restaurants,
   neighborhoods,
   cuisines
-var map
+var newMap
 var markers = []
 
 /**
  * Fetch neighborhoods and cuisines as soon as the page is loaded.
  */
 document.addEventListener('DOMContentLoaded', (event) => {
+  initMap();
   fetchNeighborhoods();
   fetchCuisines();
 });
@@ -68,15 +69,11 @@ fillCuisinesHTML = (cuisines = self.cuisines) => {
 }
 
 /**
- * Initialize Leaflet map, called from HTML.
+ * Initialize Leaflet map
  */
-window.initMap = () => {
-  let loc = {
-    lat: 40.722216,
-    lng: -73.987501
-  };
-  self.map = L.map(document.getElementById('map'), {
-    center: loc,
+initMap = () => {
+  self.newMap = L.map('map', {
+    center: [40.722216, -73.987501],
     zoom: 12,
     scrollWheelZoom: false
   });
@@ -116,7 +113,7 @@ resetRestaurants = (restaurants) => {
   ul.innerHTML = '';
 
   // Remove all map markers
-  self.markers.forEach(m => map.removeLayer(m));
+  self.markers.forEach(marker => marker.remove());
   self.markers = [];
   self.restaurants = restaurants;
 }
@@ -170,10 +167,11 @@ createRestaurantHTML = (restaurant) => {
 addMarkersToMap = (restaurants = self.restaurants) => {
   restaurants.forEach(restaurant => {
     // Add marker to the map
-    const marker = DBHelper.mapMarkerForRestaurant(restaurant, self.map);
-    map.on(marker, 'click', () => {
-      window.location.href = marker.url
-    });
+    const marker = DBHelper.mapMarkerForRestaurant(restaurant, self.newMap);
+    marker.on("click", onClick);
+    function onClick() {
+      window.location.href = marker.options.url;
+    }
     self.markers.push(marker);
   });
 }
