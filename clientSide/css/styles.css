@@ -224,7 +224,7 @@ label,
   min-height: 380px;
   padding: 0 30px 25px;
   text-align: left;
-  width: 70%;
+  width: 270px;
 }
 
 #restaurants-list .restaurant-img {
@@ -232,7 +232,7 @@ label,
   display: block;
   margin: 0;
   max-width: 100%;
-  min-height: 248px;
+  min-height: 203px;
   min-width: 100%;
 }
 
