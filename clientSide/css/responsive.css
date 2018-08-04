@@ -5,6 +5,7 @@
   font-size: .7rem;
   }
 
+  label,
   #neighborhoods-select,
   #cuisines-select,
   .restaurants,
@@ -22,7 +23,7 @@
     letter-spacing: 0;
     margin: 5px;
     padding: 0 2px;
-    width: 200px;
+    width: 180px;
   }
 
   .restaurant-info {
