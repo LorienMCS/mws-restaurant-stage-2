@@ -1,16 +1,18 @@
 let restaurants,
   neighborhoods,
-  cuisines
+  cuisines,
+  places
 var newMap
 var markers = []
 
 /**
- * Fetch neighborhoods and cuisines as soon as the page is loaded.
+ * Fetch neighborhoods, cuisines, and restaurants for DB as soon as the page is loaded.
  */
 document.addEventListener('DOMContentLoaded', (event) => {
   initMap();
   fetchNeighborhoods();
   fetchCuisines();
+  fetchRestaurantsForDB();
 });
 
 /**
@@ -185,12 +187,68 @@ addMarkersToMap = (restaurants = self.restaurants) => {
   });
 }
 
+/**
+* Fetch restaurants for database.
+*/
+function fetchRestaurantsForDB() {
+  DBHelper.fetchRestaurants((error, data) => {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log ('fetching restaurants');
+    }
+    places = data;
+  });
+}
+
+/**
+* Create and fill client-side database.
+*/
+function createAndFillClientSideDB() {
+
+  // check for support
+  if (!('indexedDB' in window)) {
+    console.log(`This browser doesn't support IndexedDB`);
+    return;
+  }
+
+  dbPromise = idb.open('restaurant-reviews', 1, upgradeDb => {
+    console.log('making a new object store');
+    if (!upgradeDb.objectStoreNames.contains('restaurants')) {
+      let restaurantsOS = upgradeDb.createObjectStore('restaurants', {keyPath: 'id'});
+      restaurantsOS.createIndex('neighborhood', 'neighborhood');
+      restaurantsOS.createIndex('cuisine', 'cuisine_type');
+    }
+  });
+
+  dbPromise.then(db => {
+    const tx = db.transaction('restaurants', 'readwrite');
+    const store = tx.objectStore('restaurants');
+    return Promise.all(places.map(place => {
+      console.log(`Adding restaurant: ${place}`);
+      return store.add(place);
+      })
+    ).catch(err => {
+      tx.abort();
+      console.log(err);
+    }).then(() => {
+      console.log('All restaurants added successfully!');
+    });
+  });
+
+}
+
+
 if (navigator.serviceWorker) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js').then(reg => {
       console.log('Service worker reg successful, scope: ', reg.scope);
+      createAndFillClientSideDB();
     }, err => {
       console.log('Service worker reg failed: ', err);
     })
   })
 }
+
+
+
