@@ -2,6 +2,7 @@ let cacheName = 'restaurants-cache-v2';
 let urlsToCache = [
   '/',
   '/restaurant.html',
+  '/manifest.json',
   '/css/styles.css',
   '/css/responsive.css',
   '/js/dbhelper.js',
