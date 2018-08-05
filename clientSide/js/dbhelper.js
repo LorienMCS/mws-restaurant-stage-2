@@ -1,4 +1,49 @@
 /**
+* Create client-side DB if it doesn't already exist, and get objectStore
+*/
+const dbPromise = idb.open('restaurant-reviews', 1, upgradeDb => {
+  if (!upgradeDb.objectStoreNames.contains('restaurants')) {
+    console.log('making a new object store');
+    let restaurantsOS = upgradeDb.createObjectStore('restaurants', {keyPath: 'id'});
+    //restaurantsOS.createIndex('neighborhood', 'neighborhood');
+    //restaurantsOS.createIndex('cuisine', 'cuisine_type');
+  }
+})
+
+/**
+* Add restaurants to IndexedDB database
+* From https://developers.google.com/web/ilt/pwa/lab-indexeddb:
+* "Don't worry about adding things twice. IndexedDB will throw errors
+* in the console if you try to add items that already exist
+* and won't add them to the store."
+*/
+function addRestaurantsToIDB(places) {
+  dbPromise.then(db => {
+    const tx = db.transaction('restaurants', 'readwrite');
+    const store = tx.objectStore('restaurants');
+    places.map(place => {
+      store.add(place);
+    })
+    return tx.complete;
+  }).then(() => {
+    console.log('All restaurants added successfully!');
+  });
+}
+
+/**
+ * Get restaurants from IndexedDB database
+ */
+function getRestaurantsFromIDB() {
+  dbPromise.then(function(db) {
+    const tx = db.transaction('restaurants', 'readwrite');
+    const store = tx.objectStore('restaurants');
+    store.getAll().then(function(data) {
+      return data;
+    });
+  });
+}
+
+/**
  * Common database helper functions.
  */
 class DBHelper {
@@ -17,9 +62,20 @@ class DBHelper {
    */
   static fetchRestaurants(callback) {
     fetch(DBHelper.DATABASE_URL)
-    .then(response => response.json())
-    .then(restaurants => callback(null, restaurants))
-    .catch(error => callback(`Request failed. Returned status of ${error.statusText}`, null));
+    .then(function(response) {
+      if(response.ok) {
+        return response.json();
+      }
+      throw new Error('Network response was not okay.')
+    })
+    .then(function(restaurants) {
+      addRestaurantsToIDB(restaurants);
+      callback(null, restaurants);
+    })
+    .catch(function(error) {
+      console.log('why am I in the catch block?', error.message);
+      callback(null, getRestaurantsFromIDB());
+    });
   }
 
   /**
