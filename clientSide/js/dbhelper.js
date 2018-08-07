@@ -5,8 +5,6 @@ const dbPromise = idb.open('restaurant-reviews', 1, upgradeDb => {
   if (!upgradeDb.objectStoreNames.contains('restaurants')) {
     console.log('making a new object store');
     let restaurantsOS = upgradeDb.createObjectStore('restaurants', {keyPath: 'id'});
-    //restaurantsOS.createIndex('neighborhood', 'neighborhood');
-    //restaurantsOS.createIndex('cuisine', 'cuisine_type');
   }
 })
 
