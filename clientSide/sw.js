@@ -1,4 +1,4 @@
-let cacheName = 'restaurants-cache-v2';
+let cacheName = 'restaurants-cache-v1';
 let urlsToCache = [
   '/',
   '/restaurant.html',
@@ -17,7 +17,11 @@ self.addEventListener('install', event => {
       cache.addAll(urlsToCache);
     })
   )
-})
+});
+
+self.addEventListener('activate', event => {
+  console.log('service worker ready to handle fetches');
+});
 
 self.addEventListener('fetch', event => {
   event.respondWith(
@@ -25,6 +29,6 @@ self.addEventListener('fetch', event => {
       return response || fetch(event.request);
     })
   )
-})
+});
 
 
